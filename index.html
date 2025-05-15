@@ -2,158 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Adriyan Snap Scroll</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Me</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #111827, #000);
       color: white;
-      padding: 60px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
-
+    .container {
+      max-width: 700px;
+      background-color: #1f2937;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      animation: fadeIn 1s ease-out forwards;
+    }
     h1 {
       font-size: 3rem;
       text-align: center;
-      margin-bottom: 50px;
-      animation: fadeIn 1s ease-out;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(-50px);
+      animation: slideDown 1s ease-out forwards;
     }
-
-    .section {
-      display: flex;
-      flex-direction: column;
-      gap: 80px;
-      align-items: center;
-    }
-
-    .box {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 600px;
-      width: 90%;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-      text-align: center;
-      transition: transform 0.6s ease, opacity 0.6s ease;
-      opacity: 1;
-      transform: translateY(0);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .icon {
-      font-size: 3rem;
-      margin-bottom: 15px;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-
     p {
-      font-size: 1rem;
-      color: #ddd;
+      font-size: 1.2rem;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateX(-50px);
+      animation: slideIn 1s ease-out 0.5s forwards;
     }
-
-    /* Thanos snap animation */
-    .snap-away {
-      animation: thanosSnap 1.2s forwards;
-    }
-
-    @keyframes thanosSnap {
-      0% {
-        opacity: 1;
-        filter: blur(0px);
-        transform: scale(1);
-        clip-path: inset(0 0 0 0);
-      }
-      30% {
-        opacity: 0.8;
-        transform: scale(1.05);
-        filter: blur(1px);
-      }
-      60% {
-        opacity: 0.3;
-        filter: blur(3px);
-        clip-path: inset(20% 30% 20% 20%);
-      }
-      100% {
-        opacity: 0;
-        filter: blur(6px);
-        transform: scale(0.8);
-        clip-path: inset(100% 100% 100% 100%);
-        pointer-events: none;
-      }
-    }
-
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
+      to {
+        opacity: 1;
       }
+    }
+    @keyframes slideDown {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
   </style>
 </head>
 <body>
-
-  <h1>Hi, I'm Adriyan</h1>
-
-  <div class="section">
-    <div class="box">
-      <div class="icon">🎮</div>
-      <h2>Gaming</h2>
-      <p>I love playing and building immersive game experiences that push creativity and fun.</p>
-    </div>
-
-    <div class="box">
-      <div class="icon">🚗</div>
-      <h2>Cars</h2>
-      <p>Speed, style, and engineering—cars are more than machines, they're passion on wheels.</p>
-    </div>
-
-    <div class="box">
-      <div class="icon">🏋️</div>
-      <h2>Gym</h2>
-      <p>Fitness fuels my life. The gym is where I grow stronger physically and mentally.</p>
-    </div>
-
-    <div class="box">
-      <div class="icon">❤️</div>
-      <h2>Women</h2>
-      <p>I appreciate the beauty, intelligence, and power of women—they inspire me daily.</p>
-    </div>
+  <div class="container">
+    <h1>About Me</h1>
+    <p>
+      Hi! I’m <span style="color: #60a5fa; font-weight: 600;">Koni</span>, a passionate developer and designer who loves building interactive, creative, and visually appealing experiences. Whether it’s crafting a personal website or designing a game world, I always bring a blend of innovation and detail to the table. Outside of coding, I enjoy gaming, exploring tech trends, and pushing the boundaries of digital creativity.
+    </p>
   </div>
-
-  <script>
-    const boxes = document.querySelectorAll('.box');
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-          entry.target.classList.add('snap-away');
-        } else {
-          entry.target.classList.remove('snap-away');
-        }
-      });
-    }, {
-      threshold: 0.1
-    });
-
-    boxes.forEach(box => observer.observe(box));
-  </script>
-
 </body>
 </html>
