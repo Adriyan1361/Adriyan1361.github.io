@@ -3,50 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Me</title>
+  <title>Adriyan's World</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden;
+      padding: 40px 20px;
+      color: white;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 40px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      max-width: 500px;
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
       text-align: center;
-      animation: fadeIn 2s ease-out;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      animation: fadeIn 1s ease-out;
     }
 
-    .card h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      font-weight: 600;
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
     }
 
-    .card p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: #ddd;
+    .box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      animation: fadeInUp 1s ease forwards;
+      opacity: 0;
     }
 
-    @keyframes fadeIn {
+    .box:nth-child(1) { animation-delay: 0.2s; }
+    .box:nth-child(2) { animation-delay: 0.4s; }
+    .box:nth-child(3) { animation-delay: 0.6s; }
+    .box:nth-child(4) { animation-delay: 0.8s; }
+
+    .box:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 12px 40px rgba(255,255,255,0.2);
+    }
+
+    .icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    @keyframes fadeInUp {
       from {
         opacity: 0;
         transform: translateY(30px);
@@ -56,28 +77,37 @@
         transform: translateY(0);
       }
     }
-
-    @media (max-width: 600px) {
-      .card {
-        padding: 25px;
-      }
-
-      .card h1 {
-        font-size: 2rem;
-      }
-
-      .card p {
-        font-size: 1rem;
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Hello, I'm Koni</h1>
-    <p>
-      I'm a creative developer passionate about design, animation, and building beautiful web experiences. I love combining code and art to make the digital world more interactive and fun.
-    </p>
+
+  <h1>Hi, I'm Adriyan</h1>
+
+  <div class="container">
+    <div class="box">
+      <div class="icon">🎮</div>
+      <h2>Gaming</h2>
+      <p>I love playing and building immersive game experiences that push creativity and fun.</p>
+    </div>
+
+    <div class="box">
+      <div class="icon">🚗</div>
+      <h2>Cars</h2>
+      <p>Speed, style, and engineering—cars are more than machines, they're passion on wheels.</p>
+    </div>
+
+    <div class="box">
+      <div class="icon">🏋️</div>
+      <h2>Gym</h2>
+      <p>Fitness fuels my life. The gym is where I grow stronger physically and mentally.</p>
+    </div>
+
+    <div class="box">
+      <div class="icon">❤️</div>
+      <h2>Women</h2>
+      <p>I appreciate the beauty, intelligence, and power of women—they inspire me daily.</p>
+    </div>
   </div>
+
 </body>
-</html> 
+</html>
