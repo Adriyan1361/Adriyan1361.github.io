@@ -283,19 +283,7 @@
       return String(s).replace(/[&<>"] /g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',' ':' ' }[ch] || ch));
     }
 
-    // ---------- Editor ----------
-    const editor = qs('#editor');
-    const editToggle = qs('#editToggle');
-    const lockBtn = qs('#lockBtn');
-    const saveBtn = qs('#saveBtn');
-    const cancelBtn = qs('#cancelBtn');
-    const saveMsg = qs('#saveMsg');
-
-    editToggle.addEventListener('click', ()=>{
-      const active = editor.classList.toggle('active');
-      editor.setAttribute('aria-hidden', active ? 'false' : 'true');
-      editToggle.textContent = active ? '✅ Done' : '✏️ Edit';
-    });
+   
 
     lockBtn.addEventListener('click', ()=>{
       state.unlocked = false;
