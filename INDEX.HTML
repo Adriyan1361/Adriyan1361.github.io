@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Modern PIN‑Gated Site</title>
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --text: #eaf0f6;
+      --muted: #9db0c0;
+      --accent: #7dd3fc; /* light sky */
+      --accent-2: #a78bfa; /* purple */
+      --danger: #fca5a5;
+      --ok: #86efac;
+      --radius: 22px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 10% 10%, #0b1622 0%, #0b0f14 40%),
+                  radial-gradient(800px 800px at 90% 10%, #111826 0%, #0b0f14 50%),
+                  radial-gradient(1000px 800px at 50% 100%, #11121a 0%, #0b0f14 60%);
+      overflow-x:hidden;
+    }
+    .container{max-width:1100px;margin:0 auto;padding:32px}
+    .glass{background:var(--panel);backdrop-filter: blur(16px); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px auto 8px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 18px rgba(125,211,252,.35)}
+    h1{font-size: clamp(28px, 3.5vw, 42px); margin:0}
+    .tagline{color:var(--muted);margin-top:4px}
+
+    /* Lock Screen */
+    .lock-wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .lock{width:min(420px,92vw);padding:28px}
+    .pin-input{letter-spacing:.3em;text-align:center;font-size:22px;padding:14px 16px;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--text);border-radius:14px}
+    .helper{color:var(--muted);font-size:14px;margin-top:8px;text-align:center}
+    .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+    .key{padding:14px 0;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:18px;cursor:pointer;user-select:none;transition:transform .04s ease, background .2s}
+    .key:active{transform:translateY(1px)}
+    .key.action{font-size:14px}
+    .unlock{margin-top:14px;width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#081017;font-weight:700;cursor:pointer}
+    .err{color:var(--danger);font-size:14px;text-align:center;min-height:20px;margin-top:10px}
+    .ok{color:var(--ok)}
+    .shake{animation:shake .3s linear}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+    /* Main */
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+    @media (max-width: 880px){.grid{grid-template-columns:1fr}}
+    .card{padding:22px}
+    .card h2{margin:0 0 8px;font-size:20px}
+    .list{display:grid;gap:10px;margin:0;padding-left:18px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:13px}
+
+    .toolbar{display:flex;gap:10px}
+    .btn{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#081017; border:none; font-weight:700}
+
+    .edit-panel{margin-top:16px;display:none}
+    .edit-panel.active{display:grid;gap:14px}
+    .row{display:grid;gap:8px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"], textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text)}
+    textarea{min-height:140px;resize:vertical}
+    .rule-editor{display:grid;gap:8px}
+    .rule-editor .items{display:grid;gap:8px}
+    .rule-item{display:flex;gap:8px}
+    .rule-item input{flex:1}
+    .rule-item button{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+    .footer{margin:28px auto 8px;color:var(--muted);font-size:12px;text-align:center}
+  </style>
+</head>
+<body>
+  <!-- LOCK SCREEN -->
+  <section id="lock" class="lock-wrap">
+    <div class="lock glass">
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+        <div class="logo"></div>
+        <h2 style="margin:6px 0 2px">Enter PIN to Access</h2>
+        <p class="helper">Tip: you can change the PIN after you unlock.</p>
+      </div>
+      <input id="pin" class="pin-input" type="password" placeholder="••••" maxlength="12" autocomplete="off" />
+      <div class="keypad" aria-label="Keypad">
+        <button class="key" data-k="1">1</button>
+        <button class="key" data-k="2">2</button>
+        <button class="key" data-k="3">3</button>
+        <button class="key" data-k="4">4</button>
+        <button class="key" data-k="5">5</button>
+        <button class="key" data-k="6">6</button>
+        <button class="key" data-k="7">7</button>
+        <button class="key" data-k="8">8</button>
+        <button class="key" data-k="9">9</button>
+        <button class="key action" data-k="clear">Clear</button>
+        <button class="key" data-k="0">0</button>
+        <button class="key action" data-k="back">⌫</button>
+      </div>
+      <button id="unlockBtn" class="unlock">Unlock</button>
+      <div id="msg" class="err"></div>
+    </div>
+  </section>
+
+  <!-- MAIN APP -->
+  <main id="app" style="display:none">
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1 id="displayName">Your Name</h1>
+            <div id="displayTagline" class="tagline">A short, modern tagline.</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button id="editToggle" class="btn">✏️ Edit</button>
+          <button id="lockBtn" class="btn">🔒 Lock</button>
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="card glass">
+          <h2>About Me</h2>
+          <p id="aboutView" style="line-height:1.6"></p>
+        </article>
+        <aside class="card glass">
+          <h2>My Rules</h2>
+          <ol id="rulesView" class="list"></ol>
+        </aside>
+      </section>
+
+      <!-- Edit Panel -->
+      <section id="editor" class="card glass edit-panel" aria-hidden="true">
+        <div class="row">
+          <label for="nameInput">Display Name</label>
+          <input id="nameInput" type="text" placeholder="Your Name">
+        </div>
+        <div class="row">
+          <label for="taglineInput">Tagline</label>
+          <input id="taglineInput" type="text" placeholder="Your modern tagline">
+        </div>
+        <div class="row">
+          <label for="aboutInput">About Me (supports new lines)</label>
+          <textarea id="aboutInput" placeholder="Write about yourself..."></textarea>
+        </div>
+        <div class="row rule-editor">
+          <label>Rules</label>
+          <div id="ruleItems" class="items"></div>
+          <button id="addRule" class="btn" type="button">+ Add Rule</button>
+        </div>
+        <div class="row">
+          <label for="pinInput">Security • Change PIN</label>
+          <input id="pinInput" type="text" placeholder="Enter new PIN (numbers only)">
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button id="saveBtn" class="btn primary" type="button">Save Changes</button>
+          <button id="cancelBtn" class="btn" type="button">Cancel</button>
+          <span id="saveMsg" class="helper"></span>
+        </div>
+      </section>
+
+      <div class="footer">Built with pure HTML, CSS & JS • Data saved locally in your browser</div>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Storage & Defaults ----------
+    const STORAGE = {
+      PIN: 'sitePIN',
+      ABOUT: 'aboutText',
+      RULES: 'rulesList',
+      UNLOCKED: 'sessionUnlocked',
+      NAME: 'displayName',
+      TAGLINE: 'displayTagline',
+    };
+    const DEFAULTS = {
+      pin: '2468',
+      name: 'Koni',
+      tagline: 'Live modern. Keep it simple.',
+      about: `Hey! I\'m Koni.\n\nThis is my private space. Please be respectful when you\nare here.`,
+      rules: [
+        'Be respectful',
+        'No spam',
+        'Ask before sharing',
+        'Keep it clean',
+      ],
+    };
+
+    const qs = (sel, el=document) => el.querySelector(sel);
+    const qsa = (sel, el=document) => [...el.querySelectorAll(sel)];
+
+    const state = {
+      get pin(){ return localStorage.getItem(STORAGE.PIN) || DEFAULTS.pin },
+      set pin(v){ localStorage.setItem(STORAGE.PIN, String(v || '').trim()) },
+      get unlocked(){ return sessionStorage.getItem(STORAGE.UNLOCKED) === '1' },
+      set unlocked(v){ v ? sessionStorage.setItem(STORAGE.UNLOCKED,'1') : sessionStorage.removeItem(STORAGE.UNLOCKED) },
+      get name(){ return localStorage.getItem(STORAGE.NAME) || DEFAULTS.name },
+      set name(v){ localStorage.setItem(STORAGE.NAME, v) },
+      get tagline(){ return localStorage.getItem(STORAGE.TAGLINE) || DEFAULTS.tagline },
+      set tagline(v){ localStorage.setItem(STORAGE.TAGLINE, v) },
+      get about(){ return localStorage.getItem(STORAGE.ABOUT) || DEFAULTS.about },
+      set about(v){ localStorage.setItem(STORAGE.ABOUT, v) },
+      get rules(){
+        try{ return JSON.parse(localStorage.getItem(STORAGE.RULES)) || DEFAULTS.rules }
+        catch{ return DEFAULTS.rules }
+      },
+      set rules(list){ localStorage.setItem(STORAGE.RULES, JSON.stringify(list || [])) },
+    };
+
+    // ---------- Lock / Unlock ----------
+    const lockEl = qs('#lock');
+    const appEl = qs('#app');
+    const msgEl = qs('#msg');
+    const pinInput = qs('#pin');
+
+    function showApp(){ lockEl.style.display='none'; appEl.style.display='block'; renderAll(); }
+    function showLock(){ appEl.style.display='none'; lockEl.style.display='grid'; pinInput.value=''; msgEl.textContent=''; }
+
+    function tryUnlock(){
+      const attempt = pinInput.value.trim();
+      if(!attempt){ return }
+      if(attempt === state.pin){
+        state.unlocked = true;
+        msgEl.textContent = 'Access granted';
+        msgEl.classList.remove('shake');
+        msgEl.classList.add('ok');
+        setTimeout(showApp, 250);
+      } else {
+        msgEl.textContent = 'Wrong PIN';
+        msgEl.classList.remove('ok');
+        msgEl.classList.add('shake');
+        pinInput.classList.add('shake');
+        setTimeout(()=>{ msgEl.classList.remove('shake'); pinInput.classList.remove('shake'); }, 320);
+      }
+    }
+
+    qsa('.key').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const k = b.dataset.k;
+        if(k === 'clear'){ pinInput.value=''; return }
+        if(k === 'back'){ pinInput.value = pinInput.value.slice(0,-1); return }
+        if(/\d/.test(k)){ pinInput.value += k; }
+      })
+    })
+    qs('#unlockBtn').addEventListener('click', tryUnlock);
+    pinInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
+
+    // ---------- Main View Rendering ----------
+    const displayName = qs('#displayName');
+    const displayTagline = qs('#displayTagline');
+    const aboutView = qs('#aboutView');
+    const rulesView = qs('#rulesView');
+
+    function renderAll(){
+      displayName.textContent = state.name;
+      displayTagline.textContent = state.tagline;
+      aboutView.innerHTML = state.about
+        .split(/\n/g)
+        .map(p=>`<p style="margin:0 0 10px">${escapeHtml(p)}</p>`)
+        .join('');
+      rulesView.innerHTML = '';
+      state.rules.forEach((r,i)=>{
+        const li = document.createElement('li');
+        li.textContent = r;
+        rulesView.appendChild(li);
+      });
+      // preload editor with current values
+      qs('#nameInput').value = state.name;
+      qs('#taglineInput').value = state.tagline;
+      qs('#aboutInput').value = state.about;
+      buildRuleEditors(state.rules);
+      qs('#pinInput').value = '';
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"] /g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',' ':' ' }[ch] || ch));
+    }
+
+    // ---------- Editor ----------
+    const editor = qs('#editor');
+    const editToggle = qs('#editToggle');
+    const lockBtn = qs('#lockBtn');
+    const saveBtn = qs('#saveBtn');
+    const cancelBtn = qs('#cancelBtn');
+    const saveMsg = qs('#saveMsg');
+
+    editToggle.addEventListener('click', ()=>{
+      const active = editor.classList.toggle('active');
+      editor.setAttribute('aria-hidden', active ? 'false' : 'true');
+      editToggle.textContent = active ? '✅ Done' : '✏️ Edit';
+    });
+
+    lockBtn.addEventListener('click', ()=>{
+      state.unlocked = false;
+      showLock();
+    });
+
+    saveBtn.addEventListener('click', ()=>{
+      state.name = qs('#nameInput').value.trim() || DEFAULTS.name;
+      state.tagline = qs('#taglineInput').value.trim() || DEFAULTS.tagline;
+      state.about = qs('#aboutInput').value.trim() || DEFAULTS.about;
+      const newRules = qsa('.rule-item input').map(i=>i.value.trim()).filter(Boolean);
+      state.rules = newRules.length ? newRules : DEFAULTS.rules;
+      const newPin = qs('#pinInput').value.trim();
+      if(newPin && !/^\d{3,12}$/.test(newPin)){
+        flashMsg('PIN must be 3–12 digits', true); return;
+      }
+      if(newPin){ state.pin = newPin; }
+      renderAll();
+      flashMsg('Saved');
+    });
+
+    cancelBtn.addEventListener('click', ()=>{
+      renderAll();
+      editor.classList.remove('active');
+      editor.setAttribute('aria-hidden','true');
+      editToggle.textContent = '✏️ Edit';
+    });
+
+    function flashMsg(text, isErr){
+      saveMsg.textContent = text;
+      saveMsg.style.color = isErr ? getComputedStyle(document.documentElement).getPropertyValue('--danger') : 'var(--muted)';
+      setTimeout(()=> saveMsg.textContent = '', 1800);
+    }
+
+    function buildRuleEditors(list){
+      const wrap = qs('#ruleItems');
+      wrap.innerHTML = '';
+      (list && list.length ? list : ['']).forEach((r)=>{
+        wrap.appendChild(makeRuleItem(r));
+      });
+    }
+
+    function makeRuleItem(value=''){
+      const row = document.createElement('div');
+      row.className = 'rule-item';
+      const input = document.createElement('input');
+      input.type='text';
+      input.placeholder='Type a rule';
+      input.value = value;
+      const del = document.createElement('button');
+      del.type='button';
+      del.textContent = '✖';
+      del.addEventListener('click', ()=> row.remove());
+      row.append(input, del);
+      return row;
+    }
+
+    qs('#addRule').addEventListener('click', ()=>{
+      qs('#ruleItems').appendChild(makeRuleItem(''));
+    });
+
+    // ---------- Boot ----------
+    (function init(){
+      if(state.unlocked){ showApp(); }
+      else { showLock(); }
+    })();
+  </script>
+</body>
+</html>
